@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TIMER APP</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+    <div id="timer-app">
+        <div class="container">
+            <div class="items">
+                <h1 class="multi-app-text">Multiple Timers App</h1>
+                <div class="timer-task">
+                    <div class="set-time">Set Time : </div>
+                    <div id="input-time">
+                        <div>
+                            <label for="hours">Hours :</label>
+                            <input type="number" id="hours" min="0" placeholder="0">
+                        </div>
+                        <div>
+                            <label for="minutes">Minutes :</label>
+                            <input type="number" id="minutes" min="0" placeholder="0">
+                        </div>
+                        <div>
+                            <label for="seconds">Seconds :</label>
+                            <input type="number" id="seconds" min="0" placeholder="0">
+                        </div>
+
+                    </div>
+                    <button id="btn" onclick="startNewTimer()">Set</button>
+                </div>
+                <div class="curent-timer">
+                    <div class="curent-timer-text">Current Timers</div>
+                    <div id="active-timer">
+                        <div class="active-timer-text">You have no timers currently!</div>
+                        <div class="timer-task">
+                            <div class="set-time">Time Left : </div>
+                            <div class="timer-count">
+                                <p class="hours-text">00 : </p>
+                                <p class="minutes-text">00 : </p>
+                                <p class="seconds-text">00</p>
+                            </div>
+                            <button id="btn">Delete</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="./script.js"></script>
+</body>
+
+</html>
