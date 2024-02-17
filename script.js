@@ -1,16 +1,18 @@
-let timerId;
+let timerId = `timer_${Date.now()}`;
 let timers = [];
-let form=document.querySelector("form");
-form.addEventListener("submit",function(e){
+let timer1 = [];
+let num=1;
+let form = document.querySelector("form");
+form.addEventListener("submit", function (e) {
     e.preventDefault();
     startNewTimer();
     form.reset();
 })
-function startNewTimer(){
+function startNewTimer() {
     const hours = parseInt(document.getElementById('hours').value) || 0;
     const minutes = parseInt(document.getElementById('minutes').value) || 0;
     const seconds = parseInt(document.getElementById('seconds').value) || 0;
-    
+
 
     if (hours === 0 && minutes === 0 && seconds === 0) {
         alert('Please enter a valid time.');
@@ -18,91 +20,98 @@ function startNewTimer(){
     }
 
     let totalTimeInSeconds = hours * 3600 + minutes * 60 + seconds;
-    
+    timers[timerId] = {
+        totalTimeInSeconds: totalTimeInSeconds,
+        inteveralId: null,
 
-     timerId = setInterval(() => {
-        if (totalTimeInSeconds <= 0) {
-            clearInterval(timerId);
-            handleTimerEnd(timerId);
+    }
+    IntervalFn(totalTimeInSeconds)
+}
+function IntervalFn(totalTimeInSeconds) {
+    let timer5 = timers[timerId];
+
+    timer5.inteveralId = setInterval(() => {
+        if (timer5.totalTimeInSeconds <= 0) {
+            clearInterval(timer5.inteveralId);
+            handleTimerEnd(timer5.inteveralId, timer5.totalTimeInSeconds);
         } else {
-            totalTimeInSeconds--;
-            updateTimerDisplay(timerId, totalTimeInSeconds);
-           
+            timer5.totalTimeInSeconds--;
+            updateTimerDisplay(timer5.inteveralId, timer5.totalTimeInSeconds);
+
         }
     }, 1000);
-
-    timers.push({ id: timerId, totalTimeInSeconds });
-    updateActiveTimersDisplay();
+    num++;
+    timer1.push(num);
+    updateActiveTimersDisplay(timer5.inteveralId, timer5.totalTimeInSeconds);
 }
-function updateTimerDisplay(timerId, remainingTime) {
-    const timerElement = document.getElementById(timerId);
+
+function updateTimerDisplay(timeId, remainingTime) {
+    const timerElement = document.getElementById(timeId);
     const hours = Math.floor(remainingTime / 3600);
     const minutes = Math.floor((remainingTime % 3600) / 60);
     const seconds = remainingTime % 60;
-    let hourText=document.querySelector(".hours-text");
-    let minuteText=document.querySelector(".minutes-text");
-    let secondsText=document.querySelector(".seconds-text");
-    hourText.innerText=formatTime(hours)+":";
-    minuteText.innerText=formatTime(minutes)+":";
-    secondsText.innerText=formatTime(seconds);
-}
-function handleTimerEnd(timerId) {
-    const timerIndex = timers.findIndex(timer => timer.id === timerId);
-    timers.splice(timerIndex, 1);
+    let hourText = timerElement.children[1].children[1];
+    let minuteText = timerElement.children[1].children[2];
+    let secondsText = timerElement.children[1].children[3];
+    hourText.innerText = formatTime(hours) + ":";
+    minuteText.innerText = formatTime(minutes) + ":";
+    secondsText.innerText = formatTime(seconds);
 
-    updateActiveTimersDisplay();
+}
+function handleTimerEnd(timeId, totalTimeInSeconds) {
+    
+    let timerTask = document.getElementById(timeId);
+    timerTask.children[0].style.display = "flex";
+    timerTask.children[1].style.display = "none";
+    timerTask.children[2].children[0].style.display = "flex";
     playAudioAlert();
-    const endedTimerElement = document.getElementById(timerId);
+    const endedTimerElement = document.getElementById(timeId);
     endedTimerElement.classList.add('timer-end');
 }
-function updateActiveTimersDisplay() {
-    const activeTimersSection = document.getElementById('active-timer');
-    activeTimersSection.innerHTML = '';
+function updateActiveTimersDisplay(timeId, totalTimeInSeconds) {
+    let activeTimersSection = document.getElementById('active-timer');
+    let activeTimerText = document.querySelector(".active-timer-text");
+    activeTimerText.style.display = "none";
 
-    timers.forEach(timer => {
-        let timerElement = document.createElement('div');
-        let timerElement1 = document.createElement('div');
-        let timerElement2 = document.createElement('div');
-        timerElement.classList.add('timer-task');
-        timerElement1.classList.add("set-time");
-        timerElement1.innerText="Time Left : ";
-        timerElement2.classList.add("timer-count");
-        let para1 = document.createElement('p');
-        let para2 = document.createElement('p');
-        let para3 = document.createElement('p');
-        para1.classList.add("hours-text");
-        para2.classList.add("minutes-text");
-        para3.classList.add("seconds-text");
-        timerElement2.append(para1,para2,para3);
-        let deleteBtn = document.createElement('button');
-        deleteBtn.innerText="Delete";
-        deleteBtn.classList.add("btn");
-        timerElement.id = timer.id;
-        timerElement.append(timerElement1,timerElement2,deleteBtn);
-        let curentTimer1=document.querySelector(".curent-timer");
-        curentTimer1.appendChild(timerElement);
-        updateTimerDisplay(timer.id, timer.totalTimeInSeconds);
+    activeTimersSection.innerHTML += `
+        <div class="timer-task"id="${timeId}">
+                            <div class="time-up">Timer Is Up !</div>
+                            <div class="timer-count">
+                                <div class="set-time">Time Left : </div>
+                                <p class="hours-text">00 : </p>
+                                <p class="minutes-text">00 : </p>
+                                <p class="seconds-text">00</p>
+                            </div>
+                            <div class="stop-delete">
+                                <button class="stop-btn"  onclick="StopTask()">Stop</button>
+                                <button id="btn1"  onclick="deleteTask(this,${timeId})">Delete</button>
+                            </div>
+                        </div>
+        
+        `
+    updateTimerDisplay(timeId, totalTimeInSeconds);
 
-        const stopButton = document.createElement('button');
-        stopButton.textContent = 'Stop audio';
-        // deleteBtn.onclick = () => handleTimerEnd(timer.id);
-        timerElement2.appendChild(stopButton);
-        curentTimer1.appendChild(timerElement);
-        stopButton.addEventListener("click",function(){
-            audio.pause();
-        })
-        deleteBtn.addEventListener("click",function(){
-            audio.pause();
-            clearInterval(timerId);
-            timerElement.remove();
-        });
-    });
 }
 function formatTime(time) {
     return time < 10 ? `0${time}` : `${time}`;
 }
 const audio = new Audio('./audio/zero-action-trailer-teaser-146679.mp3');
 function playAudioAlert() {
-   
+
     audio.play();
+}
+function deleteTask(e,timeId) {
+    let timerElement = e.parentNode.parentNode;
+    audio.pause();
+    clearInterval(timeId);
+    timerElement.remove();
+    num--;
+    timer1.pop();
+    let activeTimerText = document.querySelector(".active-timer-text");
+    if (timer1.length === 0) {
+        activeTimerText.style.display = "block";
+    }
+}
+function StopTask() {
+    audio.pause();
 }
